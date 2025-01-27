@@ -1,0 +1,106 @@
+name: Release Builder
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+  build:
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: public-ollama-finder-linux
+            asset_name: public-ollama-finder-linux
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            artifact_name: public-ollama-finder-windows.exe
+            asset_name: public-ollama-finder-windows.exe
+            target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            artifact_name: public-ollama-finder-macos
+            asset_name: public-ollama-finder-macos
+            target: x86_64-apple-darwin
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Work around spurious network errors in curl 8.0 (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          if ((rustc +stable --version --verbose | Select-String -Pattern "^release: 1\.7[01]\.")) {
+              Add-Content -Path $env:GITHUB_ENV -Value "CARGO_HTTP_MULTIPLEXING=false"
+          }
+
+      - name: Work around spurious network errors in curl 8.0 (Non-Windows)
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          if rustc +stable --version --verbose | grep -q "^release: 1\.7[01]\."; then
+              echo "CARGO_HTTP_MULTIPLEXING=false" >> $GITHUB_ENV
+          fi
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: |
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            cargo build --release
+          else
+            cargo build --release --target ${{ matrix.target }}
+          fi
+        shell: bash
+
+      - name: List Target Directory (Debug)
+        run: |
+          ls -la target/
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            ls -la target/release/
+          else
+            ls -la target/${{ matrix.target }}/release/
+          fi
+        shell: bash
+
+      - name: Prepare artifact
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            cp "target/${{ matrix.target }}/release/public-ollama-finder.exe" "${{ matrix.artifact_name }}"
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            cp "target/release/public-ollama-finder" "${{ matrix.artifact_name }}"
+          else
+            cp "target/${{ matrix.target }}/release/public-ollama-finder" "${{ matrix.artifact_name }}"
+          fi
+        shell: bash
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          asset_content_type: application/octet-stream
