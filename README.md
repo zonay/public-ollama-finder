@@ -4,7 +4,6 @@
 [![Rust](https://img.shields.io/badge/Built_With-Rust-orange.svg)](https://www.rust-lang.org)
 [![Release](https://img.shields.io/github/v/release/zonay/public-ollama-finder)](https://github.com/zonay/public-ollama-finder/releases)
 
-## Introduction
 This project provides a comprehensive network scanning tool designed to discover and enumerate accessible Ollama servers across specified network ranges. Built with Rust for optimal performance and safety, it leverages the language's concurrent programming capabilities to efficiently scan large IP ranges while maintaining minimal resource usage.
 
 ### Key Capabilities
@@ -12,16 +11,13 @@ This project provides a comprehensive network scanning tool designed to discover
 - **Model Detection**: Identifies and lists available LLMs, their sizes, and configurations
 - **Detailed Reporting**: Generates structured CSV outputs for further analysis
 - **Cross-Platform**: Supports Windows, Linux, and macOS with native executables
-
-### Technical Highlights
-- **Built with Rust**: Ensures memory safety and thread safety with zero-cost abstractions
 - **Concurrent Scanning**: Utilizes Rust's async/await for efficient parallel processing
-- **Resource Efficient**: Optimized memory usage and connection pooling
-- **Cross-Platform**: Native compilation for all major operating systems
+
+### ** This tool is for educational and authorized security testing purposes only**
 
 ## Installation & Usage
 
-1. Download the appropriate executable for your system from the [Releases page](https://github.com/zonay/public-ollama-finder/releases):
+1. Download the appropriate executable for your system from the [Releases page](https://github.com/zonay/public-ollama-finder/releases)
    - Windows: `public-ollama-finder-windows.exe`
    - Linux: `public-ollama-finder-linux`
    - macOS: `public-ollama-finder-macos`
@@ -131,8 +127,7 @@ git push origin v1.0.0
 ```
 
 ## Contributing
-
-We welcome contributions! Here's how you can help:
+Here's how you can help:
 1. Fork this repository
 2. Create a feature branch
 3. Submit a pull request
@@ -140,20 +135,16 @@ We welcome contributions! Here's how you can help:
 ## License
 This project is licensed under the MIT License.
 
-## Important Legal Notice and Disclaimer
 
-**This tool is for educational and authorized security testing purposes only.**
+#### ⚠️ **Critical Warning**
+Unauthorized scanning of servers can lead to severe consequences, including but not limited to:  
+- **Legal actions** 
+- **Network-wide IP bans**  
+- **Defensive countermeasures** by the targeted systems  
 
-### Critical Warning:
-**Scanning servers without explicit permission** may result in serious consequences:
-- Legal actions and prosecution
-- Network-wide IP bans
-- Defensive countermeasures
+By using this tool, you explicitly confirm:  
+1. You have **obtained explicit authorization** for all target networks.  
+2. You **accept full responsibility** for your actions and their consequences.  
+3. You understand and comply with all applicable **legal and ethical obligations**.  
 
-### LEGAL CONFIRMATION:
-By using this tool, you explicitly confirm:
-1. **You have authorization for all target networks**
-2. **You accept full responsibility for your actions**
-3. **You understand all legal implications**
-
-The developer of this tool assume no liability for misuse or unauthorized scanning activities.
+**The developer of this tool assumes no responsibility** for any misuse, unauthorized scanning, or non-compliance with relevant laws.
